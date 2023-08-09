@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>PDF Text Summarization with Bert model</title>
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+  <div class="container">
+    <h1>PDF Text Summarization with Bert model</h1>
+    <form id="uploadForm" action="/summarize" method="post" enctype="multipart/form-data">
+      <input type="file" name="file" id="fileInput" accept=".pdf">
+      <button type="submit" id="submitButton">Summarize</button>
+    </form>
+    <div id="summary"></div>
+  </div>
+  <script>
+    const form = document.getElementById('uploadForm');
+    const summaryDiv = document.getElementById('summary');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const fileInput = document.getElementById('fileInput');
+      const file = fileInput.files[0];
+
+      const formData = new FormData();
+      formData.append('file', file);
+
+      summaryDiv.innerHTML = 'Loading...';
+
+      try {
+        const response = await fetch('/summarize', {
+          method: 'POST',
+          body: formData,
+        });
+        const data = await response.json();
+        summaryDiv.innerHTML = `<h2>Summary:</h2><p>${data.summary}</p>`;
+      } catch (error) {
+        summaryDiv.innerHTML = 'Error occurred during summarization.';
+        console.error(error);
+      }
+    });
+  </script>
+</body>
+</html>
